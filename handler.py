@@ -5,6 +5,7 @@ from typing import Optional, Union, List, Dict, Any, Tuple
 from dotenv import load_dotenv
 import logging
 import pprint
+import backoff
 
 pp = pprint.PrettyPrinter(indent=4, compact=True)
 load_dotenv()
@@ -12,6 +13,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 from urllib.request import urlopen
+from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 import redis
 from redis import UsernamePasswordCredentialProvider
@@ -110,6 +112,7 @@ def hash_result(url):
         bytes(url, 'utf-8')
     ).hexdigest()
 
+@backoff.on_exception(backoff.expo, HTTPError, max_time=60)
 def extract_text_from_url(url: str) -> List[str]:
 
     html = urlopen(url).read()
@@ -153,7 +156,11 @@ def lambda_handler(event, context):
     url_hashes = []
 
     for url in urls:
-        extracted_html = extract_text_from_url(url)
+        try:
+            extracted_html = extract_text_from_url(url)
+        except:
+            logger.warn(f"Unable to access url: {url}")
+            continue
         extracted_html = "\n\n".join(extracted_html)
         id_html_map.update({url:extracted_html})
         url_hashes.append(hash_result(url))
