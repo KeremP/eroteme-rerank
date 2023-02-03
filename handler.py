@@ -120,10 +120,10 @@ def extract_text_from_url(url: str) -> List[str]:
     out = [t.getText().strip("\n") for t in text if t.getText() != "\n"]
     return out
 
-def build_context(html: str):
+def build_context(html: str, url: str):
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     context = text_splitter.split_text(html)
-    metadata = [{'source':i,'content':context[i]} for i in range(len(context))]
+    metadata = [{'source':i,'content':context[i], 'url':url} for i in range(len(context))]
     return context, metadata
 
 
@@ -157,7 +157,7 @@ def lambda_handler(event, context):
         extracted_html = "\n\n".join(extracted_html)
         id_html_map.update({url:extracted_html})
         url_hashes.append(hash_result(url))
-        context, metadata = build_context(extracted_html)
+        context, metadata = build_context(extracted_html, url)
         contexts.append(context)
         metadata_cache.update({url:metadata})
         metadatas.append([{"source":f"{url}<:>{i}"} for i in range(len(metadata))])

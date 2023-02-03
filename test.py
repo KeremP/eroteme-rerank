@@ -4,8 +4,8 @@ from pprint import PrettyPrinter
 
 if __name__ == "__main__":
     EVENT = {
-        "urls":["https://en.wikipedia.org/wiki/Elon_Musk"],
-        "query":"Where was Elon born?"
+        "urls":["https://en.wikipedia.org/wiki/Elon_Musk","https://www.tesla.com/elon-musk"],
+        "query":"How many companies did Elon cofound?"
     }
 
     pp = PrettyPrinter(indent=4)
