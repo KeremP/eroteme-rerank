@@ -1,15 +1,10 @@
-
 import os
-import re
 import uuid
 import json
-import tarfile
-from tqdm import tqdm
 from typing import Optional, Union, List, Dict, Any, Tuple
 from dotenv import load_dotenv
 import logging
 import pprint
-from doc_utils import map_sections
 
 pp = pprint.PrettyPrinter(indent=4, compact=True)
 load_dotenv()
